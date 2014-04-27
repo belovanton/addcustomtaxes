@@ -1,0 +1,105 @@
+<div class="am_field_row" id="am_field_row_rl" style="width: 100%; <?php if($this->getResidentialIsNull()):?>display: none;<?php endif;?>">
+    <div class="am_carrier_label">Your address is:</div>
+    <input name="residential" type="radio" value="true"  <?php if ($this->getResidentialIsChecked()):?>checked="checked"<?php endif;?> class="" id="customtaxes">
+    <label for="residential">
+        Residential<span class="price">CA$40.00</span>
+    </label>
+    <br>
+    <input name="residential" type="radio" value="false" <?php if ($this->getComercialIsChecked()):?>checked="checked"<?php endif;?>  class="" id="customtaxes">
+    <label for="residential">
+        Commercial<span class="price">CA$0.00</span>
+    </label>
+    <br>
+</div>
+
+
+<div class="am_field_row" id="am_field_row_rl" style="width: 100%; <?php if($this->getLiftgateneededIsNull()):?>display: none;<?php endif;?>">
+    <div class="am_carrier_label">Liftgate</div>
+    <input name="liftgateneeded" type="radio" value="true"  <?php if ($this->getLiftgateneededIsChecked()):?>checked="checked"<?php endif;?> class="" id="customtaxes">
+    <label for="liftgateneeded">
+        Needed<span class="price">CA$40.00</span>
+    </label>
+    <br>
+    <input name="liftgateneeded" type="radio" value="false" <?php if ($this->getLiftgateNotneededIsChecked()):?>checked="checked"<?php endif;?>class="" id="customtaxes">
+    <label for="liftgateneeded">
+        Not needed<span class="price">CA$0.00</span>
+    </label>
+    <br>
+</div>
+
+<script type="text/javascript">
+    function updateAmastyCart(url, after){
+        new Ajax.Request(url, {
+            method: 'post',
+            parameters: $('amscheckout-onepage').serialize(true),
+            onSuccess: function(response) {
+                var config = response.responseText.evalJSON();
+
+                if (config.html){
+                    if (config.html.shipping_method)
+                        $('checkout-shipping-method-load').update(config.html.shipping_method);
+
+                    if (config.html.payment_method)
+                        $('co-payment-form').update(config.html.payment_method);
+
+                    if (config.html.review){
+                        $('checkout-review-load').update(config.html.review);
+                        reviewEvents();
+                    }
+
+                    if (config.html.cart){
+                        $('amscheckout-cart').update(config.html.cart);
+                        cartEvents();
+                    }
+                }
+
+                if (typeof(after) == 'function'){
+                    after(config)
+                }
+
+                hideLoading();
+            },
+            on403: function(){
+                document.location.reload();
+            }
+        });
+    }
+    function ajaxUpdate(url, after){
+
+        showLoading();
+        new Ajax.Request('<?php echo $this->getEnablecustomtaxesPostUrl() ?>', {
+            method: 'post',
+            parameters: $('amscheckout-onepage').serialize(true),
+            onSuccess: function(transport){
+                var json = transport.responseText.evalJSON();
+                if(json.result=='true') {
+//                    $$('div[id=am_field_row_rl]').each(function(el){ el.show();});
+                }
+                updateDeliveryDate();
+                updateAmastyCart(url, after);
+
+            },
+            onFailure: function(){
+
+            },
+            on403: function(){
+                document.location.reload();
+            }
+        });
+
+    }
+    function updateDeliveryDate(){
+        $('delivery-dates').hide();
+        $('delivery-dates-please-wait').show();
+        debugger;
+        new Ajax.Request('<?php echo $this->getPostUrl() ?>', {
+            method: 'post',
+            parameters: $('amscheckout-onepage').serialize(true),
+            onSuccess: function(transport){
+            },
+            onFailure: function(){
+            }
+        });
+        $('delivery-dates-please-wait').hide();
+    }
+</script>

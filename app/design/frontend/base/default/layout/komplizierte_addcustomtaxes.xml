@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<layout>
+    <amscheckout_onepage_static>
+        <reference name="head">
+            <action method="addItem"><type>skin_css</type><name>css/addcustomtaxes.css</name></action>
+
+        </reference>
+    </amscheckout_onepage_static>
+</layout>

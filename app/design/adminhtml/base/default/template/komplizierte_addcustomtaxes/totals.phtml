@@ -1,0 +1,67 @@
+<div class="entry-edit">
+    <div class="entry-edit-head">
+        <div style="float: right;"></div>
+        <h4 class="fieldset-legend head-shipping-method icon-head">Shipping Method</h4>
+    </div>
+    <div class="fieldset">
+        <div class="am_field_row" id="am_field_row_address" style="width: 100%;">
+            <div class="am_carrier_label">Your address is:</div>
+            <input name="residential" type="radio" value="true"  <?php if ($this->getResidentialIsChecked()):?>checked="checked"<?php endif;?> class="" id="customtaxes">
+            <label for="residential">
+                Residential<span class="price"> CA$40.00</span>
+            </label>
+            <br>
+            <input name="residential" type="radio" value="false" <?php if ($this->getComercialIsChecked()):?>checked="checked"<?php endif;?>  class="" id="customtaxes">
+            <label for="residential">
+                Commercial<span class="price"> CA$0.00</span>
+            </label>
+            <br>
+        </div>
+        <div class="am_field_row" id="am_field_row_liftgate" style="width: 100%;">
+            <div class="am_carrier_label">Liftgate</div>
+            <input name="liftgateneeded" type="radio" value="true"  <?php if ($this->getLiftgateneededIsChecked()):?>checked="checked"<?php endif;?> class="" id="customtaxes">
+            <label for="liftgateneeded">
+                Needed<span class="price"> CA$40.00</span>
+            </label>
+            <br>
+            <input name="liftgateneeded" type="radio" value="false" <?php if ($this->getLiftgateNotneededIsChecked()):?>checked="checked"<?php endif;?>class="" id="customtaxes">
+            <label for="liftgateneeded">
+                Not needed<span class="price"> CA$0.00</span>
+            </label>
+            <br>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //<![CDATA[
+    var radioSelectorString = 'input[type="radio"][id="customtaxes"]';
+    $$(radioSelectorString).each(function(el){
+        el.stopObserving();
+        Event.observe(el, 'click', function(){
+            if (el.checked == true){
+                var Code = el.getValue();
+                var ElName = el.readAttribute('name');
+
+                new Ajax.Request('<?php echo $this->getPostUrl() ?>', {
+                    method: 'post',
+                    parameters: { 'element_code': Code, 'element_name': ElName,  'form_key': '<?php echo $this->getFormKey(); ?>'},
+                    onSuccess: function(transport){
+                        console.log('success');
+                        order.loadArea(['totals'], true);
+                        //amOnepageCheckoutObj.saveBilling();
+//                        var json = transport.responseText.evalJSON();
+//                        Element.update('delivery-dates', json.dropdownhtml);
+//                        $('delivery-dates-please-wait').hide();
+//                        $('delivery-dates').show();
+//                        $$(radioSelectorString).each( function(el){ el.enable(); } );
+                    },
+                    onFailure: function(){
+                        console.log('error');
+                    }
+                });
+            }
+        });
+    });
+    //]]>
+</script>
